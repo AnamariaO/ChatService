@@ -1,0 +1,17 @@
+# Build files
+/build/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Binaries
+*.o
+*.out
+*.exe
+_client
+_server
+
+# Logs / OS files
+*.log
+*.DS_Store
