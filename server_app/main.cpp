@@ -1,9 +1,10 @@
 #include "../shared/signal_handler/signal_handler.h"
+#include "../shared/config.h"
 #include "server_app.h"
 #include <iostream>
 
 int main() {
-  int port = 8080;
+  int port = DEFAULT_PORT;
 
   Server server(port);
   SignalHandler<Server>::registerHandler(&server, &Server::stop);
@@ -12,7 +13,7 @@ int main() {
   while (server.isRunning()) {
         std::this_thread::sleep_for(std::chrono::seconds(1));
     }
-    
+
   // std::cout << "[Server] Press Enter to stop the server...\n";
   // std::cin.get(); // Wait for user input to stop the server
 

@@ -1,3 +1,4 @@
+#include "../shared/config.h"
 #include "client_app.h"
 #include <arpa/inet.h>
 #include <cstring>
@@ -11,7 +12,9 @@ Client::Client(const std::string &server_ip, int port)
 
 Client::~Client() { stop(); }
 
-void Client::setUser(const std::string &_user) { user = _user; }
+void Client::setUser(const std::string &_user) {
+  user = _user.empty() ? DEFAULT_USERNAME : _user; 
+}
 
 bool Client::connectToServer() {
   client_fd = socket(AF_INET, SOCK_STREAM, 0); // creates the socket
@@ -89,7 +92,7 @@ void Client::stop() {
 }
 
 void Client::receiveMessages() {
-  char buffer[1024];
+  char buffer[BUFFER_SIZE];
   while (running) {
     ssize_t bytes_received = recv(client_fd, buffer, sizeof(buffer) - 1, 0);
     if (bytes_received <= 0) {

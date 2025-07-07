@@ -1,3 +1,4 @@
+#include "../shared/config.h"
 #include "server_app.h"
 #include <algorithm>
 #include <cstring>
@@ -147,7 +148,7 @@ void Server::acceptClients() {
 }
 
 void Server::handleClient(int client_fd) {
-  char buffer[1024];
+  char buffer[BUFFER_SIZE];
   std::string user;
   std::string content;
 

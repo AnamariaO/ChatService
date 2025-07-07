@@ -4,5 +4,5 @@ add_executable(_client
 )
 
 target_include_directories(_client PRIVATE
-    ${CMAKE_SOURCE_DIR}/shared/signal_handler
+    ${CMAKE_SOURCE_DIR}/shared
 )
