@@ -69,6 +69,7 @@ void Server::acceptClients() {
         int client_fd = accept(server_fd, (sockaddr*)&client_address, &client_length); // waiting for new client connections on the lisening socket(server_fd)
         if(client_fd >=0)
         {
+            std::cout<<"Client "<<client_fd<<" is now connected."<<std::endl;
             std::lock_guard<std::mutex> lock(clients_mutex);
             client_fds.push_back(client_fd); // add new client's descriptor to the list of clients
             std::thread(&Server::handleClient, this, client_fd).detach();
@@ -101,6 +102,7 @@ void Server::handleClient(int client_fd) {
    }
    
    close(client_fd); //Shuts down this client’s socket — it's done communicating.
+    
     {
         std::lock_guard<std::mutex> lock(clients_mutex);
         client_fds.erase(std::remove(client_fds.begin(), client_fds.end(), client_fd), client_fds.end());

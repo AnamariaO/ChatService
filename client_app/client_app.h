@@ -6,12 +6,12 @@
 
 class Client {
 public:
-    Client(const std::string& host, int port);
+    Client(const std::string& server_ip, int port); // contructor initializing ip and port
     ~Client();
 
     void setUser(const std::string& _user);
-    bool connectToServer();
-    void start();
+    bool connectToServer(); // try to connect to server
+    void start(); // start sending/recieving
     void stop();
 
 private:
@@ -21,7 +21,7 @@ private:
 
     std::string server_ip;
     int port;
-    int server_fd;
+    int client_fd; // client socket  descriptor
     std::atomic<bool> running;
     std::thread receiver_thread;
 };
