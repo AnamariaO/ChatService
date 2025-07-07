@@ -138,7 +138,7 @@ void Server::acceptClients() {
                &client_length); // waiting for new client connections on the
                                 // lisening socket(server_fd)
     if (client_fd >= 0) {
-      std::cout << "Client " << client_fd << " is now connected." << std::endl;
+      logClientStatus(client_fd, true);
       std::lock_guard<std::mutex> lock(clients_mutex);
       client_fds.push_back(
           client_fd); // add new client's descriptor to the list of clients
@@ -182,18 +182,22 @@ void Server::handleClient(int client_fd) {
         client_fds.end());
   }
 
-  std::cout << "Client " << client_fd << " is now disconnected." << std::endl;
+  logClientStatus(client_fd, false);
 }
 
-void Server::broadcastMessage(const std::string &message, int sender_fd) {
+void Server::broadcastMessage(std::string_view message, int sender_fd) {
   std::lock_guard<std::mutex> lock(clients_mutex);
 
   for (int cl_fd : client_fds) {
     if (cl_fd != sender_fd) {
-      ssize_t bytes_sent = send(cl_fd, message.c_str(), message.length(), 0);
+      ssize_t bytes_sent = send(cl_fd, message.data(), message.length(), 0);
       if (bytes_sent == -1) {
         std::cerr << "Failed to send message to client " << cl_fd << std::endl;
       }
     }
   }
+}
+
+void Server::logClientStatus(int fd, bool connected) {
+    std::cout << "Client " << fd << " is now " << (connected ? "connected" : "disconnected") << ".\n";
 }

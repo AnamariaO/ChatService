@@ -32,5 +32,7 @@ private:
 
   void acceptClients();
   void handleClient(int client_fd);
-  void broadcastMessage(const std::string &message, int sender_fd);
+  void broadcastMessage(std::string_view message, int sender_fd);
+
+  void logClientStatus(int fd, bool connected);
 };

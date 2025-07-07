@@ -3,8 +3,15 @@
 #include "server_app.h"
 #include <iostream>
 
-int main() {
+int main(int argc, char* argv[]) {
   int port = DEFAULT_PORT;
+
+  for (int i = 1; i < argc; ++i) {
+    std::string arg = argv[i];
+    if ((arg == "--port" || arg == "-p") && i + 1 < argc) {
+        port = std::stoi(argv[++i]);
+    }
+  }
 
   Server server(port);
   SignalHandler<Server>::registerHandler(&server, &Server::stop);
