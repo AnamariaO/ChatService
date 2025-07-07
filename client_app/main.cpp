@@ -1,4 +1,4 @@
-#include "../shared/signal_handler/signal_handler.h"
+#include "../shared/utils/signal_handler.h"
 #include "../shared/config.h"
 #include "client_app.h"
 #include <iostream>

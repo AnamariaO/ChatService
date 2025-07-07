@@ -1,3 +1,5 @@
+#include "../shared/utils/signal_handler.h"
+#include "../shared/utils/time_stamp.h"
 #include "../shared/config.h"
 #include "server_app.h"
 #include <algorithm>
@@ -166,10 +168,11 @@ void Server::handleClient(int client_fd) {
     size_t delimiter_pos = new_message.find(':');
     user = new_message.substr(0, delimiter_pos);
     content = new_message.substr(delimiter_pos + 1);
-    std::cout << "[User " << user << "]: " << content << std::endl;
+    std::cout << currentTimestamp() << "[User " << user << "]: " << content << std::endl;
 
     // Broadcast message to all other clients
-    broadcastMessage(new_message, client_fd);
+    std::string timestamped_message = currentTimestamp() + " " + new_message;
+    broadcastMessage(timestamped_message, client_fd);
   }
 
   close(client_fd); // Shuts down this client’s socket — it's done

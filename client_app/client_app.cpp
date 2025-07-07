@@ -1,3 +1,4 @@
+#include "../shared/utils/signal_handler.h"
 #include "../shared/config.h"
 #include "client_app.h"
 #include <arpa/inet.h>
@@ -96,11 +97,16 @@ void Client::receiveMessages() {
   while (running) {
     ssize_t bytes_received = recv(client_fd, buffer, sizeof(buffer) - 1, 0);
     if (bytes_received <= 0) {
-      std::cout << "Server closed the connection.\n";
+      if (bytes_received == 0) {
+        std::cout << "[Client] Connection closed (possible by server).\n";
+      } 
+      else {
+         perror("[Client] recv failed");  // optional debug
+      }
       running = false;
       break;
     }
     buffer[bytes_received] = '\0';
-    std::cout << "[Server] from " << buffer << std::endl;
+    std::cout << buffer << std::endl;
   }
 }
