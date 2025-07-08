@@ -24,26 +24,19 @@ bool Client::connectToServer() {
     return false;
   }
 
-  sockaddr_in server_addr{}; // Prepares a (sockaddr_in)struct with the server
-                             // IP and port.
+  sockaddr_in server_addr{}; // prepares (sockaddr_in)struct with IP and port.
   server_addr.sin_family = AF_INET;
-  server_addr.sin_port =
-      htons(port); // converts port number from host byte order to network byte
-                   // order (big endian)
+  server_addr.sin_port = htons(port); // converts port num from host byte order to network byte
 
-  if (inet_pton(AF_INET, server_ip.c_str(), &server_addr.sin_addr) <=
-      0) { // This line converts a human-readable IP address string (like
-           // "127.0.0.1") into a binary format that the socket API can
-           // understand and stores it in server_addr.sin_addr
+  if (inet_pton(AF_INET, server_ip.c_str(), &server_addr.sin_addr) <= 0) { // This line converts a human-readable IP address string (like
+                                                                           // "127.0.0.1") into a binary format that the socket API can
+                                                                           // understand and stores it in server_addr.sin_addr
     std::cerr << "Invalid server address\n"; // 0 -invalid ip/ -1 -system error
     return false;
   }
 
-  if (connect(client_fd, (sockaddr *)&server_addr, sizeof(server_addr)) <
-      0) { // attempts to establish a TCP connection to the server you specified
-           // (by IP and port).
-    std::cerr << "Connection failed\n"; // If the server is not listening,
-                                        // unreachable, or wrong port
+  if (connect(client_fd, (sockaddr *)&server_addr, sizeof(server_addr)) < 0) { // attempts TCP connection to the server specified(by IP and port).
+    std::cerr << "Connection failed\n"; // If the server is not listening,  unreachable, or wrong port
     return false;
   }
 
@@ -54,9 +47,8 @@ bool Client::connectToServer() {
 
 void Client::start() {
   running = true;
-  receiver_thread = std::thread(
-      &Client::receiveMessages,
-      this); // allows the client to listen for messages from the server in the
+  receiver_thread = std::thread(&Client::receiveMessages,this); 
+             // allows the client to listen for messages from the server in the
              // background, while the main thread keeps reading user input
 
   std::string message;
@@ -69,10 +61,8 @@ void Client::start() {
     }
 
     message = user + ": " + message;
-    ssize_t bytes_sent =
-        send(client_fd, message.c_str(), message.length(),
-             0); // sends message to server using the sovket API, transmits raw
-                 // bytes over TCP connection
+    ssize_t bytes_sent = send(client_fd, message.c_str(), message.length(), 0); // sends message to server using the socket API, 
+                                                                                // transmits raw bytes over TCP connection
     if (bytes_sent == -1) {
       std::cerr << "Failed to send message.\n";
     }
@@ -81,7 +71,6 @@ void Client::start() {
 
 void Client::stop() {
 
-  // if(running){
   running = false;
   shutdown(client_fd, SHUT_RDWR);
   close(client_fd);
@@ -89,7 +78,6 @@ void Client::stop() {
     receiver_thread.join();
   }
   std::cout << "Disconnected from server.\n";
-  // }
 }
 
 void Client::receiveMessages() {

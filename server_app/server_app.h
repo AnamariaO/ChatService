@@ -8,8 +8,8 @@
 
 class Server {
 public:
-  explicit Server(int port); // ensures that only direct construction is allowed
-  ~Server();                 // Ensures sockets are closed and threads shut down
+  explicit Server(int port); 
+  ~Server();                 
 
   void start();
   void stop();
@@ -22,9 +22,7 @@ private:
                  // machine should handle the incoming network connection
   std::atomic<bool> running; // thread safe flag to check if server is active
 
-  std::vector<int>
-      client_fds; // this stores all connected client socket file descriptors
-                  // (FDs) so we can broadcast messages to them
+  std::vector<int> client_fds;
   std::mutex clients_mutex; // synchronizes access to client_fds and prevents
                             // crashes if two threads modify it at the same time
   

@@ -6,8 +6,7 @@
 
 class Client {
 public:
-  Client(const std::string &server_ip,
-         int port); // contructor initializing ip and port
+  Client(const std::string &server_ip, int port); // contructor initializing ip and port
   ~Client();
 
   void setUser(const std::string &_user);

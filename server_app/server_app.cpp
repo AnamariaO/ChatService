@@ -30,17 +30,12 @@ void Server::start() {
 
   sockaddr_in server_address{}; // struct that defines the server’s address (IP
                                 // + port + family)
-  server_address.sin_family =
-      AF_INET; // Set the address family to IPv4, matched with the socket() call
-               // earlier.
-  server_address.sin_port =
-      htons(port_); // Host TO Network Short, Converts from the machine’s byte
-                    // order to network byte order (big-endian), which is
-                    // standard for sending data over the network.
-  server_address.sin_addr.s_addr =
-      INADDR_ANY; // special constant provided by the OS | It accepts
-                  // connections from: Localhost/LAN/External network (if port
-                  // is open)/Any IP/interface on the machine
+  server_address.sin_family = AF_INET; // Set the address family to IPv4, matched with the socket() call earlier.
+  server_address.sin_port = htons(port_); // Host TO Network Short, Converts from the machine’s byte
+                                          // order to network byte order (big-endian), which is
+                                          // standard for sending data over the network.
+  server_address.sin_addr.s_addr = INADDR_ANY; // accepts coonections from: Localhost/LAN/External network 
+                                               //(if port is open)/Any IP/interface on the machine
 
   if (bind(server_fd, (sockaddr *)&server_address, sizeof(server_address)) <
       0) { // This socket is for receiving connections on this IP/port
@@ -48,23 +43,20 @@ void Server::start() {
     exit(EXIT_FAILURE);
   }
 
-  if (listen(server_fd, 5) <
-      0) { // Start listening for incoming connections on this socket, 5 is the
-           // backlog->how many connections can wait in the queue before they’re
-           // accepted.
+  if (listen(server_fd, 5) < 0) { // Start listening for incoming connections on this socket, 5 is the
+                                  // backlog->how many connections can wait in the queue before they’re
+                                  // accepted.
     perror("Listening failure: ");
     exit(EXIT_FAILURE);
   }
 
-  running =
-      true; // Sets the running flag to true, this flag controls the loop in
-            // your acceptClients() thread, so it knows the server is live
+  running = true; // Sets the running flag to true, this flag controls the loop in
+                  // your acceptClients() thread, so it knows the server is live
   std::cout << "[Server] Listening on port " << port_ << "...\n";
 
-  std::thread(&Server::acceptClients, this)
-      .detach(); // Launches a new thread, Runs the acceptClients() method on
-                 // the current Server object, Immediately detaches that thread
-                 // (lets it run on its own, in the background)
+  std::thread(&Server::acceptClients, this).detach(); // Launches a new thread, Runs the acceptClients() method on
+                                                      // the current Server object, Immediately detaches that thread
+                                                      // (lets it run on its own, in the background)
   std::thread(&Server::handleServerCommands, this).detach();
 }
 
@@ -92,7 +84,6 @@ void Server::handleServerCommands(){
             }
         } else if (!input.empty()) {
             std::cout << "[Server] Unknown command: " << input << "\n";
-
         }
     }
 }
@@ -105,28 +96,18 @@ void Server::stop() {
   running = false;
   // cleanup client sockets
   {
-    std::lock_guard<std::mutex> lock(
-        clients_mutex); // creates a scoped lock on the clients_mutex to safely
-                        // access shared data (client_fds). This ensures no
-                        // other thread can modify client_fds while we’re
-                        // iterating over it (thread safety).
-    for (int client_fd :
-         client_fds) {  // Loops over all connected client sockets (client_fd)
-                        // and closes each one using the Linux close() system
-                        // call.
+    std::lock_guard<std::mutex> lock(clients_mutex); // creates a scoped lock on the clients_mutex to safely
+                                                     // access shared data (client_fds).
+    for (int client_fd : client_fds) {
       close(client_fd); // This terminates the connection with each client
     }
-    client_fds.clear(); // Clears the list of client file descriptors. After we
-                        // close them, they are no longer valid or needed.
-                        // clear() removes all elements from the vector.
+    client_fds.clear(); // Clears the list of client file descriptors
   } // lock_guard automatically releases the mutex when it goes out of scope
-    // here
 
   // Close the server socket
-  if (server_fd != -1) { // check if the server socket is open.
-    close(server_fd);    // stops the server from accepting new connections.
-    server_fd = -1;      // ignal that server is closed closed (good practice to
-                         // prevent accidental reuse).
+  if (server_fd != -1) { // check if the server socket is open
+    close(server_fd);    // stops the server from accepting new connections
+    server_fd = -1;      // signal that server is closed closed
   }
 }
 
@@ -142,8 +123,7 @@ void Server::acceptClients() {
     if (client_fd >= 0) {
       logClientStatus(client_fd, true);
       std::lock_guard<std::mutex> lock(clients_mutex);
-      client_fds.push_back(
-          client_fd); // add new client's descriptor to the list of clients
+      client_fds.push_back(client_fd); // add new client's descriptor to the list of clients
       std::thread(&Server::handleClient, this, client_fd).detach();
     }
   }
